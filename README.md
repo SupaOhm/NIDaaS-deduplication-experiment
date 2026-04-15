@@ -25,3 +25,23 @@ Minimal experimental framework for evaluating stream deduplication strategies be
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
+```
+
+## Current status
+Working:
+- multi-file CIC-IDS2017 loading and cleaning
+- merged dataset creation
+- fingerprint generation
+- micro-batch simulation
+- NoDedupe baseline
+- offline Random Forest training and saved-model inference
+
+Planned next:
+- replace toy downstream stage with saved RF inference
+- implement ExactMap deduplication
+- add duplicate injection
+- evaluate Bloom and hybrid dedup variants
+
+Note:
+- current RF training uses a random row split and is only a temporary downstream detector setup
+- final evaluation should use a stricter split strategy such as day/file holdout

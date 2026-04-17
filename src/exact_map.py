@@ -37,12 +37,13 @@ class ExactMapDedupe:
                 keep_mask.append(True)
                 self._insert(fp)
 
-        out = batch.loc[keep_mask].copy()
+        kept = batch.loc[keep_mask].copy()
+        dropped_df = batch.loc[[not x for x in keep_mask]].copy()
 
         input_events = len(batch)
-        output_events = len(out)
+        output_events = len(kept)
 
-        return out, {
+        return kept, dropped_df, {
             "input_events": input_events,
             "output_events": output_events,
             "dropped_duplicates": dropped,

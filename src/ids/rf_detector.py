@@ -5,8 +5,9 @@ import joblib
 import pandas as pd
 
 
-MODEL_PATH = Path("artifacts/rf_model.joblib")
-FEATURES_PATH = Path("artifacts/rf_features.joblib")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+MODEL_PATH = PROJECT_ROOT / "artifacts" / "rf_model.joblib"
+FEATURES_PATH = PROJECT_ROOT / "artifacts" / "rf_features.joblib"
 
 
 class RFDetector:

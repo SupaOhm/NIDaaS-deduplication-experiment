@@ -10,6 +10,10 @@ class ExactMapDedupe:
         self.seen: set[str] = set()
         self.order: deque[str] = deque()
 
+    def reset(self) -> None:
+        self.seen.clear()
+        self.order.clear()
+
     def _insert(self, fp: str) -> None:
         if fp in self.seen:
             return
@@ -19,10 +23,10 @@ class ExactMapDedupe:
 
         while len(self.order) > self.max_recent:
             old = self.order.popleft()
-            self.seen.remove(old)
+            self.seen.discard(old)
 
-    def process_batch(self, batch: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
-        keep_mask = []
+    def process_batch(self, batch: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+        keep_mask: list[bool] = []
         dropped = 0
 
         for fp in batch["fingerprint"]:
@@ -35,9 +39,13 @@ class ExactMapDedupe:
 
         out = batch.loc[keep_mask].copy()
 
+        input_events = len(batch)
+        output_events = len(out)
+
         return out, {
-            "input_events": len(batch),
-            "output_events": len(out),
+            "input_events": input_events,
+            "output_events": output_events,
             "dropped_duplicates": dropped,
+            "drop_rate": dropped / input_events if input_events > 0 else 0.0,
             "state_size": len(self.seen),
         }

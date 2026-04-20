@@ -11,9 +11,11 @@ def inject_exact_replays(
     df: pd.DataFrame,
     duplicate_rate: int,
     random_seed: int = 42,
+    allowed_rates: list[int] | None = None,
 ) -> tuple[pd.DataFrame, dict]:
-    if duplicate_rate not in ALLOWED_DUPLICATE_RATES:
-        raise ValueError(f"duplicate_rate must be one of {ALLOWED_DUPLICATE_RATES}")
+    valid_rates = ALLOWED_DUPLICATE_RATES if allowed_rates is None else allowed_rates
+    if duplicate_rate not in valid_rates:
+        raise ValueError(f"duplicate_rate must be one of {valid_rates}")
 
     original_rows = len(df)
     duplicate_rows = int(round(original_rows * duplicate_rate / 100))

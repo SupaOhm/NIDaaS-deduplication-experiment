@@ -21,6 +21,13 @@ DEFAULT_BLOOM_BITS = [10_000_000, 25_000_000, 50_000_000, 100_000_000]
 DEFAULT_BLOOM_HASHES = [2, 3, 4, 5]
 
 
+def positive_int(value: str) -> int:
+    parsed = int(value)
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("value must be positive")
+    return parsed
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Side experiment for Bloom fairness under fixed packet_counts fingerprints."
@@ -28,6 +35,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--data-dir", default="data")
     parser.add_argument("--batch-size", type=int, default=5000)
     parser.add_argument("--max-recent", type=int, default=50000)
+    parser.add_argument(
+        "--max-rows",
+        type=positive_int,
+        default=None,
+        help="Optional row cap applied after cleaning and before duplicate injection.",
+    )
     parser.add_argument(
         "--duplicate-rate",
         type=int,
@@ -50,6 +63,12 @@ def add_packet_count_fingerprints(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
     out["fingerprint"] = out.apply(build_fingerprint_with_packet_counts, axis=1)
     return out
+
+
+def apply_max_rows(df: pd.DataFrame, max_rows: int | None) -> pd.DataFrame:
+    if max_rows is None or max_rows >= len(df):
+        return df.copy()
+    return df.head(max_rows).copy()
 
 
 def make_bloom_bytes(bit_size: int | None) -> int | None:
@@ -151,6 +170,14 @@ def main() -> None:
     print("Total rows:", len(df))
     print("Files loaded:", df["source_file"].nunique())
     print(df["binary_label"].value_counts())
+
+    loaded_rows = len(df)
+    df = apply_max_rows(df, args.max_rows)
+    if args.max_rows is not None:
+        print("\nRow limit:")
+        print(f"max_rows: {args.max_rows}")
+        print(f"loaded_rows: {loaded_rows}")
+        print(f"rows_after_limit: {len(df)}")
 
     df, injection_stats = inject_exact_replays(
         df,

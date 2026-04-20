@@ -1,6 +1,6 @@
 # NIDaaS Deduplication Experiment
 
-Minimal experimental framework for evaluating stream deduplication strategies before downstream IDS-style detection.
+Minimal experimental framework for evaluating stream deduplication strategies before fixed RF anomaly detection.
 
 ## Current scope
 - Load and clean CIC-IDS2017 CSV files
@@ -9,6 +9,7 @@ Minimal experimental framework for evaluating stream deduplication strategies be
 - Simulate micro-batch processing
 - Run NoDedupe baseline
 - Run ExactMap deduplication before a fixed Random Forest detector
+- Evaluate the cleaning -> dedup -> RF anomaly detection branch only
 
 ## Project structure
 - `src/load_clean.py` - CSV loading and cleaning
@@ -39,15 +40,16 @@ Working:
 - ExactMap deduplication
 - Bloom-only deduplication
 - Bloom+ExactMap hybrid deduplication
+- controlled exact replay duplicate injection
 - offline Random Forest training and saved-model inference
 
 Current default:
 - fingerprint mode: `packet_counts`
 - dedupe mode: ExactMap
-- downstream detector: saved Random Forest artifacts
+- RF anomaly detector: saved Random Forest artifacts
 
 Planned next:
-- add duplicate injection
+- run controlled duplicate-rate sweeps
 - tune Bloom and Bloom+ExactMap parameters
 
 ## Runner commands

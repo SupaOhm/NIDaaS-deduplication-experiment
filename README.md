@@ -13,10 +13,21 @@ CIC-IDS2017 CSV files -> cleaning -> optional duplicate injection -> fingerprint
 The goal is to measure how different deduplication strategies affect event
 volume, benign/attack drops, throughput, and fixed RF detection metrics.
 
+## Platform Notes
+
+This repository is developed and primarily documented for macOS/Linux
+environments using Unix-like shells. Windows PowerShell setup guidance is
+included for convenience, but Windows has not been fully tested in this project.
+
+Keep one copy of this README for all platforms. After the virtual environment is
+activated, the Python module commands are the same across platforms.
+
 ## Quick Reproduction
 
 After placing the CIC-IDS2017 CSV files in `data/`, the minimum reproduction
 sequence is:
+
+macOS / Linux (Unix-like shell):
 
 ```bash
 python3 -m venv .venv
@@ -26,9 +37,15 @@ python3 -m src.train_rf
 python3 -m src.runner
 ```
 
-The example shell commands in this README are written for macOS/Linux shells.
-Windows users should use the equivalent virtual-environment activation command,
-such as `.venv\Scripts\activate`.
+Windows (PowerShell):
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m src.train_rf
+python -m src.runner
+```
 
 There are no standalone executable binaries in this repository. The project is
 run through the Python module commands documented below.
@@ -80,6 +97,8 @@ The code was developed with Python 3.14.2. Use Python 3.11 or newer.
 
 From a fresh clone:
 
+macOS / Linux (Unix-like shell):
+
 ```bash
 python3 --version
 python3 -m venv .venv
@@ -88,8 +107,18 @@ python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt
 ```
 
-All commands below assume they are run from the repository root with the virtual
-environment activated.
+Windows (PowerShell):
+
+```powershell
+python --version
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+All commands below assume they are run from the repository root after the virtual
+environment has been activated.
 
 ## Dataset Placement
 

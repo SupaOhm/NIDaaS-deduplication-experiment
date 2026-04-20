@@ -8,6 +8,7 @@ import pandas as pd
 from sklearn.metrics import precision_score, recall_score, f1_score
 
 from src.load_clean import load_and_clean_folder
+from src.duplicate_injector import ALLOWED_DUPLICATE_RATES, inject_exact_replays
 from src.fingerprint import (
     build_fingerprint_basic,
     build_fingerprint_with_duration,
@@ -65,6 +66,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-recent", type=int, default=50000)
     parser.add_argument("--bloom-bits", type=int, default=50_000_000)
     parser.add_argument("--bloom-hashes", type=int, default=4)
+    parser.add_argument(
+        "--duplicate-rate",
+        type=int,
+        choices=ALLOWED_DUPLICATE_RATES,
+        default=0,
+        help="Exact replay injection rate as a percent of original rows.",
+    )
+    parser.add_argument("--duplicate-seed", type=int, default=42)
     return parser.parse_args()
 
 
@@ -249,6 +258,19 @@ def main() -> None:
     print("Files loaded:", df["source_file"].nunique())
     print(df.groupby("source_file").size().sort_values(ascending=False))
     print(df["binary_label"].value_counts())
+
+    df, injection_stats = inject_exact_replays(
+        df,
+        duplicate_rate=args.duplicate_rate,
+        random_seed=args.duplicate_seed,
+    )
+    print("\nDuplicate injection:")
+    print(f"mode: {injection_stats['injection_mode']}")
+    print(f"duplicate_rate: {injection_stats['duplicate_rate']}%")
+    print(f"random_seed: {injection_stats['random_seed']}")
+    print(f"original_rows: {injection_stats['original_rows']}")
+    print(f"injected_rows: {injection_stats['injected_rows']}")
+    print(f"total_rows_after_injection: {injection_stats['total_rows']}")
 
     fingerprint_modes = selected_fingerprint_modes(args.fingerprint_mode)
     dedupe_modes = selected_dedupe_modes(args.dedupe_mode)

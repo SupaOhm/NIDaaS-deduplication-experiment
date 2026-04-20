@@ -58,6 +58,11 @@ Planned next:
 # Compare NoDedupe, ExactMap, Bloom, and Bloom+ExactMap with packet_counts fixed
 .venv/bin/python -m src.runner --dedupe-mode all
 
+# Compare dedupe strategies with controlled exact replay duplicates
+.venv/bin/python -m src.runner --dedupe-mode all --duplicate-rate 10
+
+# Supported duplicate rates are 0, 5, 10, and 20 percent
+
 # Run Bloom-only with explicit parameters
 .venv/bin/python -m src.runner --dedupe-mode bloom --bloom-bits 50000000 --bloom-hashes 4
 

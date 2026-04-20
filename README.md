@@ -16,6 +16,8 @@ Minimal experimental framework for evaluating stream deduplication strategies be
 - `src/microbatch.py` - batch iterator
 - `src/no_dedupe.py` - NoDedupe baseline
 - `src/exact_map.py` - bounded ExactMap dedupe baseline
+- `src/bloom.py` - Bloom-only approximate dedupe baseline
+- `src/bloom_exact.py` - Bloom front filter with ExactMap confirmation
 - `src/metrics.py` - runtime metrics
 - `src/train_rf.py` - offline RF training
 - `src/runner.py` - main experiment runner
@@ -35,6 +37,8 @@ Working:
 - micro-batch simulation
 - NoDedupe baseline
 - ExactMap deduplication
+- Bloom-only deduplication
+- Bloom+ExactMap hybrid deduplication
 - offline Random Forest training and saved-model inference
 
 Current default:
@@ -43,14 +47,22 @@ Current default:
 - downstream detector: saved Random Forest artifacts
 
 Planned next:
-- keep `packet_counts` fixed while evaluating Bloom and Bloom+ExactMap
 - add duplicate injection
-- evaluate Bloom and Bloom+ExactMap dedup variants
+- tune Bloom and Bloom+ExactMap parameters
 
 ## Runner commands
 ```bash
 # Default next-stage baseline: packet_counts + ExactMap + RF
 .venv/bin/python -m src.runner
+
+# Compare NoDedupe, ExactMap, Bloom, and Bloom+ExactMap with packet_counts fixed
+.venv/bin/python -m src.runner --dedupe-mode all
+
+# Run Bloom-only with explicit parameters
+.venv/bin/python -m src.runner --dedupe-mode bloom --bloom-bits 50000000 --bloom-hashes 4
+
+# Run Bloom+ExactMap with explicit parameters
+.venv/bin/python -m src.runner --dedupe-mode bloom_exact --bloom-bits 50000000 --bloom-hashes 4
 
 # Fingerprint sensitivity sweep
 .venv/bin/python -m src.runner --fingerprint-mode all

@@ -14,6 +14,12 @@ class ExactMapDedupe:
         self.seen.clear()
         self.order.clear()
 
+    def contains(self, fp: str) -> bool:
+        return fp in self.seen
+
+    def insert(self, fp: str) -> None:
+        self._insert(fp)
+
     def _insert(self, fp: str) -> None:
         if fp in self.seen:
             return
